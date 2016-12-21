@@ -8,7 +8,7 @@ import (
 )
 
 // Logger log it
-// TODO 日志等级 格式化日至 日志内容 代码行数
+// TODO 日志等级 格式化日至 日志内容 代码行数 服务开始时建立连接 整个服务结束 defer conn.Close()
 func Logger(v interface{}) {
 	service := ":1200"
 	udpAddr, err := net.ResolveUDPAddr("udp4", service)
@@ -36,5 +36,6 @@ func Logger(v interface{}) {
 	fmt.Println(string(buf[0:n]))
 	//连接
 	os.Exit(0)
+	// conn.Close()
 
 }
