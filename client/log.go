@@ -7,6 +7,8 @@ import (
 	"os"
 )
 
+// Logger log it
+// TODO 日志等级 格式化日至 日志内容 代码行数
 func Logger(v interface{}) {
 	service := ":1200"
 	udpAddr, err := net.ResolveUDPAddr("udp4", service)
@@ -30,7 +32,9 @@ func Logger(v interface{}) {
 		log.Printf("%v Fatal error %v", os.Stderr, err.Error())
 		os.Exit(1)
 	}
+	//日志格式
 	fmt.Println(string(buf[0:n]))
+	//连接
 	os.Exit(0)
 
 }
