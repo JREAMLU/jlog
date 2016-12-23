@@ -2,40 +2,83 @@ package client
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"os"
+	"strings"
+
+	"github.com/JREAMLU/core/com"
+	"github.com/astaxie/beego/logs"
 )
 
-// Logger log it
+// LoggerClient logger client
+type LoggerClient struct {
+	Conn    *net.UDPConn
+	Console bool
+	Level   int
+}
+
+const (
+	// UDP4 udp4
+	UDP4 = "udp4"
+)
+
+const (
+	// LevelEmergency emergency
+	LevelEmergency = iota
+	// LevelAlert alert
+	LevelAlert
+	// LevelCritical critical
+	LevelCritical
+	// LevelError error
+	LevelError
+	// LevelWarning warning
+	LevelWarning
+	// LevelNotice notice
+	LevelNotice
+	// LevelInformational information
+	LevelInformational
+	// LevelDebug debug2
+	LevelDebug
+)
+
+// LoggerConn UDPConn
+var LoggerConn *net.UDPConn
+
+// InitLogger init logger client
 // TODO 日志等级 格式化日至 日志内容 代码行数 服务开始时建立连接 整个服务结束 defer conn.Close()
-func Logger(v interface{}) {
-	service := ":1200"
-	udpAddr, err := net.ResolveUDPAddr("udp4", service)
+func InitLogger(addr string) (LoggerClient, error) {
+	var loggerClient LoggerClient
+	udpAddr, err := net.ResolveUDPAddr(UDP4, com.StringJoin(":", addr))
 	if err != nil {
-		log.Printf("%v Fatal error %v", os.Stderr, err.Error())
-		os.Exit(1)
+		return loggerClient, fmt.Errorf("%v Fatal error %v", os.Stderr, err.Error())
 	}
 	conn, err := net.DialUDP("udp", nil, udpAddr)
 	if err != nil {
-		log.Printf("%v Fatal error %v", os.Stderr, err.Error())
-		os.Exit(1)
+		return loggerClient, fmt.Errorf("%v Fatal error %v", os.Stderr, err.Error())
 	}
-	_, err = conn.Write([]byte(v.(string)))
-	if err != nil {
-		log.Printf("%v Fatal error %v", os.Stderr, err.Error())
-		os.Exit(1)
-	}
-	var buf [512]byte
-	n, err := conn.Read(buf[0:])
-	if err != nil {
-		log.Printf("%v Fatal error %v", os.Stderr, err.Error())
-		os.Exit(1)
-	}
-	//日志格式
-	fmt.Println(string(buf[0:n]))
-	//连接
-	os.Exit(0)
-	// conn.Close()
+	loggerClient.Conn = conn
+	return loggerClient, nil
+}
 
+// Write udp to server
+func Write(v interface{}) error {
+	_, err := LoggerConn.Write([]byte(v.(string)))
+	if err != nil {
+		return fmt.Errorf("%v Fatal error %v", os.Stderr, err.Error())
+	}
+	return nil
+}
+
+// SetLevel sets the global log level used by the simple logger.
+func SetLevel(l int) {
+	logs.SetLevel(l)
+}
+
+// Critical logs a message at critical level.
+func Critical(v ...interface{}) {
+	logs.Critical(generateFmtStr(len(v)), v...)
+}
+
+func generateFmtStr(n int) string {
+	return strings.Repeat("%v ", n)
 }
