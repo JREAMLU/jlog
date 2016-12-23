@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -24,7 +25,12 @@ func TestLogger(t *testing.T) {
 		// log.Println("i: ", i)
 		// Logger("abc")
 		// }
-		// InitLogger("1200")
+		err := InitLogger("1200")
+		if err != nil {
+			fmt.Println(err)
+		}
+		SetLevel(2)
+		// SetLogger()
 		// Write("cde")
 		Critical("cde", "abc")
 	})

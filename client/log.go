@@ -7,15 +7,8 @@ import (
 	"strings"
 
 	"github.com/JREAMLU/core/com"
-	"github.com/astaxie/beego/logs"
+	"github.com/JREAMLU/jlog/client/logs"
 )
-
-// LoggerClient logger client
-type LoggerClient struct {
-	Conn    *net.UDPConn
-	Console bool
-	Level   int
-}
 
 const (
 	// UDP4 udp4
@@ -46,18 +39,17 @@ var LoggerConn *net.UDPConn
 
 // InitLogger init logger client
 // TODO 日志等级 格式化日至 日志内容 代码行数 服务开始时建立连接 整个服务结束 defer conn.Close()
-func InitLogger(addr string) (LoggerClient, error) {
-	var loggerClient LoggerClient
+func InitLogger(addr string) error {
 	udpAddr, err := net.ResolveUDPAddr(UDP4, com.StringJoin(":", addr))
 	if err != nil {
-		return loggerClient, fmt.Errorf("%v Fatal error %v", os.Stderr, err.Error())
+		return fmt.Errorf("%v Fatal error %v", os.Stderr, err.Error())
 	}
 	conn, err := net.DialUDP("udp", nil, udpAddr)
 	if err != nil {
-		return loggerClient, fmt.Errorf("%v Fatal error %v", os.Stderr, err.Error())
+		return fmt.Errorf("%v Fatal error %v", os.Stderr, err.Error())
 	}
-	loggerClient.Conn = conn
-	return loggerClient, nil
+	LoggerConn = conn
+	return nil
 }
 
 // Write udp to server
@@ -70,8 +62,15 @@ func Write(v interface{}) error {
 }
 
 // SetLevel sets the global log level used by the simple logger.
-func SetLevel(l int) {
-	logs.SetLevel(l)
+func SetLevel(level int) {
+	logs.SetLevel(level)
+}
+
+// SetConsole set console show
+func SetConsole(toggle bool) {
+	if !toggle {
+		logs.DelLogger(logs.AdapterConsole)
+	}
 }
 
 // Critical logs a message at critical level.
