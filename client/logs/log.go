@@ -30,6 +30,8 @@ const (
 const (
 	// AdapterConsole console
 	AdapterConsole = "console"
+	// AdapterUDP udp
+	AdapterUDP = "udp"
 )
 
 // JLogger looger
@@ -87,6 +89,19 @@ func NewLogger(channelLens ...int64) *JLogger {
 	return jl
 }
 
+// Register makes a log provide available by the provided name.
+// If Register is called twice with the same name or if driver is nil,
+// it panics.
+func Register(name string, log newLoggerFunc) {
+	if log == nil {
+		panic("logs: Register provide is nil")
+	}
+	if _, dup := adapters[name]; dup {
+		panic("logs: Register called twice for provider " + name)
+	}
+	adapters[name] = log
+}
+
 func (jl *JLogger) writeMsg(logLevel int, msg string, v ...interface{}) error {
 	if !jl.init {
 		jl.lock.Lock()
@@ -135,7 +150,6 @@ func (jl *JLogger) SetLevel(l int) {
 
 func (jl *JLogger) writeToLoggers(when time.Time, msg string, level int) {
 	for _, l := range jl.outputs {
-		fmt.Println("aaa")
 		err := l.WriteMsg(when, msg, level)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "unable to WriteMsg to adapter:%v,error:%v\n", l.name, err)

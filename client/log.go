@@ -73,6 +73,11 @@ func SetConsole(toggle bool) {
 	}
 }
 
+// SetLogger sets a new logger.
+func SetLogger(adaptername string, config string) error {
+	return logs.SetLogger(adaptername, config)
+}
+
 // Critical logs a message at critical level.
 func Critical(v ...interface{}) {
 	logs.Critical(generateFmtStr(len(v)), v...)

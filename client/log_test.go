@@ -29,6 +29,7 @@ func TestLogger(t *testing.T) {
 		if err != nil {
 			fmt.Println(err)
 		}
+		SetLogger("udp", `{"format": "yes"}`)
 		SetLevel(2)
 		// SetLogger()
 		// Write("cde")
