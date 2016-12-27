@@ -189,6 +189,7 @@ func (jl *JLogger) setLogger(adapterName string, configs ...string) error {
 	}
 
 	log, ok := adapters[adapterName]
+	fmt.Println(adapters)
 	if !ok {
 		return fmt.Errorf("logs: unknown adaptername %q (forgotten Register?)", adapterName)
 	}
