@@ -8,16 +8,19 @@ import (
 	"time"
 
 	"github.com/JREAMLU/core/com"
+	"github.com/JREAMLU/core/mq"
 )
 
+var topic = `jlog`
+
 // Server log :port & goroutine
-func Server(port string) {
-	udpAddr, err := net.ResolveUDPAddr("udp4", com.StringJoin(":", port))
+func Server(resolveNet, listenNet, port string) {
+	udpAddr, err := net.ResolveUDPAddr(resolveNet, com.StringJoin(":", port))
 	if err != nil {
 		log.Printf("%v Fatal error %v", os.Stderr, err.Error())
 		os.Exit(1)
 	}
-	conn, err := net.ListenUDP("udp", udpAddr)
+	conn, err := net.ListenUDP(listenNet, udpAddr)
 	if err != nil {
 		log.Printf("%v Fatal error %v", os.Stderr, err.Error())
 		os.Exit(1)
@@ -27,14 +30,16 @@ func Server(port string) {
 	}
 }
 
-// TODO thorw kakfa
 func handleClient(conn *net.UDPConn) {
-	var buf [512]byte
-	_, addr, err := conn.ReadFromUDP(buf[0:])
+	conn.SetReadDeadline(time.Now().Add(30 * time.Second))
+	data := make([]byte, 1024)
+	_, addr, err := conn.ReadFromUDP(data)
 	if err != nil {
+		log.Println("failed to read UDP msg because of ", err.Error())
 		return
 	}
-	fmt.Println("content: ", string(buf[0:]))
+	err = mq.PushKafka(topic, string(data))
+	fmt.Println("log: ", string(data), err)
 	daytime := time.Now().String()
 	conn.WriteToUDP([]byte(daytime), addr)
 }
