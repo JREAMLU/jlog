@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"log"
 	"net"
 	"os"
@@ -25,21 +24,27 @@ func Server(resolveNet, listenNet, port string) {
 		log.Printf("%v Fatal error %v", os.Stderr, err.Error())
 		os.Exit(1)
 	}
+	defer conn.Close()
 	for {
 		handleClient(conn)
 	}
 }
 
 func handleClient(conn *net.UDPConn) {
-	conn.SetReadDeadline(time.Now().Add(30 * time.Second))
-	data := make([]byte, 1024)
-	_, addr, err := conn.ReadFromUDP(data)
+	// conn.SetReadDeadline(time.Now().Add(30 * time.Second))
+	packet := make([]byte, 1024)
+	_, addr, err := conn.ReadFromUDP(packet)
 	if err != nil {
 		log.Println("failed to read UDP msg because of ", err.Error())
 		return
 	}
-	err = mq.PushKafka(topic, string(data))
-	fmt.Println("log: ", string(data), err)
-	daytime := time.Now().String()
-	conn.WriteToUDP([]byte(daytime), addr)
+	go pushKafka(conn, addr, packet)
+}
+
+func pushKafka(conn *net.UDPConn, addr *net.UDPAddr, packet []byte) {
+	err := mq.PushKafka(topic, string(packet))
+	if err != nil {
+		log.Println("log: ", string(packet), err)
+	}
+	conn.WriteToUDP([]byte(time.Now().String()), addr)
 }
