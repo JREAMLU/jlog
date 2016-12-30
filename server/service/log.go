@@ -31,9 +31,9 @@ func Server(resolveNet, listenNet, port string) {
 }
 
 func handleClient(conn *net.UDPConn) {
-	// conn.SetReadDeadline(time.Now().Add(30 * time.Second))
 	packet := make([]byte, 1024)
-	_, addr, err := conn.ReadFromUDP(packet)
+	n, addr, err := conn.ReadFromUDP(packet)
+	packet = packet[:n-1]
 	if err != nil {
 		log.Println("failed to read UDP msg because of ", err.Error())
 		return
