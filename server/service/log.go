@@ -4,7 +4,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"time"
 
 	"github.com/JREAMLU/core/com"
 	"github.com/JREAMLU/core/mq"
@@ -46,5 +45,5 @@ func pushKafka(conn *net.UDPConn, addr *net.UDPAddr, packet []byte) {
 	if err != nil {
 		log.Println("log: ", string(packet), err)
 	}
-	conn.WriteToUDP([]byte(time.Now().String()), addr)
+	// conn.WriteToUDP([]byte(time.Now().String()), addr)
 }
