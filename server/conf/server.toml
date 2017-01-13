@@ -1,0 +1,28 @@
+mode = "dev"
+
+[servers]
+
+    [servers.dev]
+    addr = "172.16.9.4:9092,172.16.9.4:9092"
+    resolveNet = "udp4"
+    listenNet = "udp"
+    port = "1200"
+
+    [servers.test]
+    addr = "172.16.9.4:9092,172.16.9.4:9092"
+    resolveNet = "udp4"
+    listenNet = "udp"
+    port = "1200"
+
+    [servers.staging]
+    addr = "172.16.9.4:9092,172.16.9.4:9092"
+    resolveNet = "udp4"
+    listenNet = "udp"
+    port = "1200"
+
+    [servers.prod]
+    addr = "172.16.9.4:9092,172.16.9.4:9092"
+    resolveNet = "udp4"
+    listenNet = "udp"
+    port = "1200"
+
