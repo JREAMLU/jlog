@@ -13,6 +13,7 @@ type baseConfig struct {
 	ResolveNet string `toml:"resolveNet"`
 	ListenNet  string `toml:"listenNet"`
 	Port       string `toml:"port"`
+	Topic      string `toml:"topic"`
 }
 
 // GetConfig get server config

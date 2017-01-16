@@ -10,10 +10,8 @@ import (
 	"github.com/astaxie/beego"
 )
 
-var topic = `jlog`
-
 // Server log :port & goroutine
-func Server(resolveNet, listenNet, port string) {
+func Server(resolveNet, listenNet, port, topic string) {
 	udpAddr, err := net.ResolveUDPAddr(resolveNet, com.StringJoin(":", port))
 	if err != nil {
 		beego.Info(fmt.Sprintf("%v Fatal error %v", os.Stderr, err.Error()))
@@ -26,11 +24,11 @@ func Server(resolveNet, listenNet, port string) {
 	}
 	defer conn.Close()
 	for {
-		handleClient(conn)
+		handleClient(conn, topic)
 	}
 }
 
-func handleClient(conn *net.UDPConn) {
+func handleClient(conn *net.UDPConn, topic string) {
 	packet := make([]byte, 1024)
 	n, _, err := conn.ReadFromUDP(packet)
 	packet = packet[:n-1]
@@ -38,10 +36,10 @@ func handleClient(conn *net.UDPConn) {
 		beego.Error("failed to read UDP msg because of ", err.Error())
 		return
 	}
-	go pushKafka(packet)
+	go pushKafka(packet, topic)
 }
 
-func pushKafka(packet []byte) {
+func pushKafka(packet []byte, topic string) {
 	err := mq.PushKafka(topic, string(packet))
 	if err != nil {
 		beego.Error("failed to push kafka: ", string(packet), err)

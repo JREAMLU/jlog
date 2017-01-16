@@ -1,4 +1,4 @@
-mode = "dev"
+mode = "prod"
 
 [servers]
 
@@ -7,22 +7,26 @@ mode = "dev"
     resolveNet = "udp4"
     listenNet = "udp"
     port = "1200"
+    topic = "jlog"
 
     [servers.test]
     addr = "172.16.9.4:9092,172.16.9.4:9092"
     resolveNet = "udp4"
     listenNet = "udp"
     port = "1200"
+    topic = "jlog"
 
     [servers.staging]
     addr = "172.16.9.4:9092,172.16.9.4:9092"
     resolveNet = "udp4"
     listenNet = "udp"
     port = "1200"
+    topic = "jlog"
 
     [servers.prod]
     addr = "172.16.9.4:9092,172.16.9.4:9092"
     resolveNet = "udp4"
     listenNet = "udp"
     port = "1200"
+    topic = "jlog"
 

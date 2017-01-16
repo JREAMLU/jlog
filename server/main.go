@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"strings"
 
@@ -10,7 +9,6 @@ import (
 	"github.com/astaxie/beego"
 )
 
-var addrs = `172.16.9.4:9092,172.16.9.4:9092`
 var global service.Config
 
 func init() {
@@ -19,13 +17,11 @@ func init() {
 	if err != nil {
 		beego.Error("toml parasr error: ", err)
 	}
-	fmt.Println(global.Mode)
-	fmt.Println(global)
 }
 
 func main() {
 	// init Kafka
-	err := mq.InitKafka(strings.Split(addrs, ","))
+	err := mq.InitKafka(strings.Split(global.Servers[global.Mode].Addr, ","))
 	if err != nil {
 		log.Printf("Init Kafka Error:%s", err.Error())
 		return
@@ -33,6 +29,10 @@ func main() {
 	defer mq.Close()
 	beego.Info("Kafka Connected")
 
-	// service.Server("udp4", "udp", "1200")
-	service.Server("udp4", "udp", "1200")
+	service.Server(
+		global.Servers[global.Mode].ResolveNet,
+		global.Servers[global.Mode].ListenNet,
+		global.Servers[global.Mode].Port,
+		global.Servers[global.Mode].Topic,
+	)
 }
