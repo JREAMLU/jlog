@@ -43,5 +43,6 @@ func pushKafka(packet []byte, topic string) {
 	err := mq.PushKafka(topic, string(packet))
 	if err != nil {
 		beego.Error("failed to push kafka: ", string(packet), err)
+		return
 	}
 }
