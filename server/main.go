@@ -24,7 +24,7 @@ func main() {
 	err := mq.InitKafka(strings.Split(global.Servers[global.Mode].Addr, ","))
 	if err != nil {
 		log.Printf("Init Kafka Error:%s", err.Error())
-		return
+		panic(err)
 	}
 	defer mq.Close()
 	beego.Info("Kafka Connected")

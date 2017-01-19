@@ -29,7 +29,7 @@ func Server(resolveNet, listenNet, port, topic string) {
 }
 
 func handleClient(conn *net.UDPConn, topic string) {
-	packet := make([]byte, 1024)
+	packet := make([]byte, 1024*10)
 	n, _, err := conn.ReadFromUDP(packet)
 	packet = packet[:n-1]
 	if err != nil {
